@@ -19,11 +19,28 @@ const REFUND_EXAMPLE = {
 
 export function Dashboard() {
     const [name, setName] = useState("")
+    const [page, setPage] = useState(1)
+    const [totalPage, setTotalPage] = useState(10)
+    const [refunds, setRefunds] = useState([REFUND_EXAMPLE])
 
     function searchRefunds(e: React.SyntheticEvent) {
         e.preventDefault()
         
         console.log(name)
+    }
+
+    function handlePagination(action: "next" | "previous") {
+        setPage((prevPage) => {
+            if(action === "next" && prevPage < totalPage) {
+                return prevPage + 1
+            }
+
+            if(action === "previous" && prevPage > 1) {
+                return prevPage - 1
+            }
+
+            return prevPage
+        })
     }
 
     return (
@@ -42,11 +59,15 @@ export function Dashboard() {
                 </Button>
             </form>
 
-            <div className="mt-6 flex flex-col gap-4 max-h-85.5 overflow-y-scroll">
-                <RefundItem data={REFUND_EXAMPLE} />
+            <div className="my-6 flex flex-col gap-4 max-h-85.5 overflow-y-scroll">
+                {
+                    refunds.map((item) => (
+                        <RefundItem key={item.id} data={REFUND_EXAMPLE} href={`/refund/${item.id}`} />
+                    ))
+                }
             </div>
 
-            <Pagination current={1} total={10} />
+            <Pagination current={page} total={totalPage} onNext={() => handlePagination("next")} onPrevious={() => handlePagination("previous")}/>
         </div>
     )
 }
